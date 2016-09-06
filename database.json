@@ -1,0 +1,11 @@
+{
+    "dev": {
+        "driver": "mysql",
+        "user": "root",
+        "host": "localhost",
+        "password": "root",
+        "database": "budget",
+        "connectionLimit": 100,
+        "debug": false
+    }
+}
