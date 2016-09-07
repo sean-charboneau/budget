@@ -1,49 +1,52 @@
+var config = require('config');
 var express = require('express');
+var expressJwt = require('express-jwt');
+var jwt = require('jsonwebtoken');
+
+var userController = require('../lib/controllers/users');
+
+var authenticate = expressJwt({secret: config.get('apikey')});
 var router = express.Router();
 
-var isAuthenticated = function (req, res, next) {
-	// if user is authenticated in the session, call the next() to call the next request handler 
-	// Passport adds this method to request object. A middleware is allowed to add properties to
-	// request and response objects
-	if (req.isAuthenticated())
-		return next();
-	// if the user is not authenticated then redirect him to the login page
-	res.redirect('/');
-}
+var generateToken = function(req, res, next) {
+	req.token = jwt.sign({
+		id: req.user.id
+	}, config.get('apikey'), {
+		expiresIn: "2h"
+	});
+    res.token = req.token;
+    res.cookie(config.get('tokenCookie'), req.token, { path: '/', maxAge: 900000, httpOnly: false });
+    console.log('Token: ' + req.token);
+	next();
+};
+
+var respond = function(req, res) {
+    console.log('Token2: ' + req.token);
+	res.status(200).json({
+		user: req.user,
+		token: req.token
+	});
+};
 
 module.exports = function(passport) {
 
-	/* GET login page. */
-	router.get('/', function(req, res) {
-        if(req.isAuthenticated()) {
-            return res.redirect('/home');
-        }
-    	// Display the Login page with any flash message, if any
-		res.render('index', { message: req.flash('message') });
-	});
-
 	/* Handle Login POST */
-	router.post('/login', passport.authenticate('login', {
-		successRedirect: '/home',
-		failureRedirect: '/',
-		failureFlash : true  
-	}));
-
-	/* GET Registration Page */
-	router.get('/register', function(req, res){
-		res.render('register', {message: req.flash('message')});
-	});
+    router.post('/login', passport.authenticate('login', {
+        session: false
+    }), generateToken, respond);
 
 	/* Handle Registration POST */
 	router.post('/register', passport.authenticate('register', {
-		successRedirect: '/home',
-		failureRedirect: '/register',
-		failureFlash : true  
-	}));
+		session: false
+	}), generateToken, respond);
 
-	/* GET Home Page */
-	router.get('/home', isAuthenticated, function(req, res){
-		res.render('home', { user: req.user });
+	router.get('/me', authenticate, function(req, res) {
+        userController.getUserById(req.user.id, function(err, user) {
+            if(err) {
+                return res.status(400).json({error: err});
+            }
+		    res.status(200).json(user);
+        });
 	});
 
 	/* Handle Logout */

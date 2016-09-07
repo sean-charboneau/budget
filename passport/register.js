@@ -18,7 +18,7 @@ module.exports = function(passport) {
                     if (user) {
                         console.log(user);
                         console.log('User already exists with username: ' + username);
-                        return callback(null, false, req.flash('message', 'User Already Exists'));
+                        return callback(null, false, {'message': 'User Already Exists'});
                     }
                     else {
                         // Create the user

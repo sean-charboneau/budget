@@ -1,7 +1,6 @@
 var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
 var express = require('express');
-var expressSession = require('express-session');
 var favicon = require('serve-favicon');
 var flash = require('connect-flash');
 var logger = require('morgan');
@@ -20,17 +19,15 @@ app.set('view engine', 'jade');
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
-app.use(logger('dev'));
+app.use(express.static(path.join(__dirname, 'public')));
+app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(logger('dev'));
 app.use(flash());
 
 // Configuring Passport
-app.use(expressSession({secret: 'mySecretKey'}));
 app.use(passport.initialize());
-app.use(passport.session());
 
 // Initialize Passport
 var initPassport = require('./passport/init');
@@ -53,7 +50,7 @@ app.use(function(req, res, next) {
 if (app.get('env') === 'development') {
   app.use(function(err, req, res, next) {
     res.status(err.status || 500);
-    res.render('error', {
+    res.json({
       message: err.message,
       error: err
     });
@@ -64,7 +61,7 @@ if (app.get('env') === 'development') {
 // no stacktraces leaked to user
 app.use(function(err, req, res, next) {
   res.status(err.status || 500);
-  res.render('error', {
+  res.json({
     message: err.message,
     error: {}
   });
