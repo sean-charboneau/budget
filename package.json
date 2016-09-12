@@ -6,7 +6,7 @@
     "start": "node ./bin/www"
   },
   "dependencies": {
-    "async": "~2.0.1",
+    "async": "^2.0.1",
     "bcrypt-nodejs": "0.0.3",
     "body-parser": "~1.15.1",
     "config": "^1.21.0",
@@ -24,6 +24,7 @@
     "node-mysql": "^0.4.2",
     "passport": "~0.3.2",
     "passport-local": "~1.0.0",
+    "request": "^2.74.0",
     "serve-favicon": "~2.3.0"
   }
 }

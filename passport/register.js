@@ -34,7 +34,7 @@ module.exports = function(passport) {
                         userController.createUser(newUser, function(err) {
                             if (err) {
                                 console.log('Error creating user: ' + err);  
-                                throw err;  
+                                return callback(null, false, {'message': err});
                             }
                             console.log('User Registration succesful');    
                             return callback(null, newUser);

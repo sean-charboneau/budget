@@ -12,7 +12,7 @@ var generateToken = function(req, res, next) {
 	req.token = jwt.sign({
 		id: req.user.id
 	}, config.get('apikey'), {
-		expiresIn: "2h"
+		expiresIn: "2w"
 	});
     res.token = req.token;
     res.cookie(config.get('tokenCookie'), req.token, { path: '/', maxAge: 900000, httpOnly: false });
@@ -32,12 +32,14 @@ module.exports = function(passport) {
 
 	/* Handle Login POST */
     router.post('/login', passport.authenticate('login', {
-        session: false
+        session: false,
+		failWithError: true
     }), generateToken, respond);
 
 	/* Handle Registration POST */
 	router.post('/register', passport.authenticate('register', {
-		session: false
+		session: false,
+		failWithError: true
 	}), generateToken, respond);
 
 	router.get('/me', authenticate, function(req, res) {
