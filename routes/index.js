@@ -12,7 +12,7 @@ var generateToken = function(req, res, next) {
 	req.token = jwt.sign({
 		id: req.user.id
 	}, config.get('apikey'), {
-		expiresIn: "2w"
+		expiresIn: "14d"
 	});
     res.token = req.token;
     res.cookie(config.get('tokenCookie'), req.token, { path: '/', maxAge: 900000, httpOnly: false });

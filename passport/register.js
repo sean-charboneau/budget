@@ -29,6 +29,7 @@ module.exports = function(passport) {
                         newUser.email = req.param('email');
                         newUser.firstName = req.param('firstName');
                         newUser.lastName = req.param('lastName');
+                        newUser.baseCurrency = req.param('baseCurrency');
 
                         // save the user
                         userController.createUser(newUser, function(err) {
