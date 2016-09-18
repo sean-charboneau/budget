@@ -51,6 +51,12 @@ module.exports = function(passport) {
         });
 	});
 
+	router.post('/withdrawal', authenticate, function(req, res) {
+		console.log(req.body);
+		console.log(req.user);
+		res.status(200).json({'test': 'test'});
+	});
+
 	/* Handle Logout */
 	router.get('/signout', function(req, res) {
 		req.logout();
