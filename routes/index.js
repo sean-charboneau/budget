@@ -2,7 +2,9 @@ var config = require('config');
 var express = require('express');
 var expressJwt = require('express-jwt');
 var jwt = require('jsonwebtoken');
+var moment = require('moment');
 
+var cashController = require('../lib/controllers/cash');
 var userController = require('../lib/controllers/users');
 
 var authenticate = expressJwt({secret: config.get('apikey')});
@@ -51,10 +53,34 @@ module.exports = function(passport) {
         });
 	});
 
+	router.get('/cashReserves', authenticate, function(req, res) {
+		cashController.getCashReserves(req.user.id, function(err, results) {
+			if(err) {
+				res.status(400).json({error: err});
+			}
+			res.status(200).json(results);
+		});
+	});
+
 	router.post('/withdrawal', authenticate, function(req, res) {
-		console.log(req.body);
-		console.log(req.user);
-		res.status(200).json({'test': 'test'});
+		var amount = req.body.amount;
+		var currency = req.body.currency;
+		var date = req.body.date;
+		var isFee = req.body.isFee;
+		var feeAmount = req.body.feeAmount;
+		date = moment(date).format('YYYY-MM-DD');
+
+		cashController.recordWithdrawal(req.user.id, amount, currency, date, isFee, feeAmount, function(err, results) {
+			if(err) {
+				res.status(400).json({error: err});
+			}
+			cashController.getCashReserves(req.user.id, function(err, results) {
+				if(err) {
+					res.status(400).json({error: err});
+				}
+				res.status(200).json(results);
+			});
+		});
 	});
 
 	/* Handle Logout */
