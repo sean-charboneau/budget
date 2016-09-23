@@ -8,9 +8,20 @@ exports.up = function (db, callback) {
                 '(' +
                 '   id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, ' +
                 '   category VARCHAR(255), ' +
+                '   is_default TINYINT(1), ' +
                 '   created_at TIMESTAMP DEFAULT "0000-00-00 00:00:00", ' +
                 '   updated_at TIMESTAMP DEFAULT now() ON UPDATE now()' +
                 ');',
+            cb);
+        },
+        function(cb) {
+            db.runSql(
+                'INSERT INTO CATEGORY (category, is_default, created_at) ' +
+                'VALUES ' +
+                '("food and drink", 1, CURRENT_TIMESTAMP()), ' +
+                '("accommodation", 1, CURRENT_TIMESTAMP()), ' +
+                '("transportation", 1, CURRENT_TIMESTAMP()), ' +
+                '("sightseeing", 1, CURRENT_TIMESTAMP());',
             cb);
         },
         function(cb) {
