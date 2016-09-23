@@ -68,17 +68,32 @@ module.exports = function(passport) {
 		var date = req.body.date;
 		var isFee = req.body.isFee;
 		var feeAmount = req.body.feeAmount;
-		date = moment(date).format('YYYY-MM-DD');
+
+		try {
+			date = moment(date).format('YYYY-MM-DD');
+		} catch(e) {
+			return res.status(400).json({error: 'Invalid date format'});
+		}
+		if(!amount) {
+			return res.status(400).json({error: 'Amount is required'});
+		}
+		if(!date) {
+			return res.status(400).json({error: 'Date is required'});
+		}
+		if(!currency) {
+			return res.status(400).json({error: 'Currency is required'});
+		}
+		
 
 		cashController.recordWithdrawal(req.user.id, amount, currency, date, isFee, feeAmount, function(err, results) {
 			if(err) {
-				res.status(400).json({error: err});
+				return res.status(400).json({error: err});
 			}
 			cashController.getCashReserves(req.user.id, function(err, results) {
 				if(err) {
-					res.status(400).json({error: err});
+					return res.status(400).json({error: err});
 				}
-				res.status(200).json(results);
+				return res.status(200).json(results);
 			});
 		});
 	});

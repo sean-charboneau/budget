@@ -59,7 +59,7 @@ exports.down = function (db, callback) {
             cb);
         },
         function(cb) {
-            db.runSql("DROP TABLE IF EXISTS withdrawal;", callback);
+            db.runSql("DROP TABLE IF EXISTS withdrawal;", cb);
         }
     ], callback);
 };
