@@ -7,11 +7,13 @@ var logger = require('morgan');
 var passport = require('passport');
 var path = require('path');
 
+var redis = require('./redis');
 var routes = require('./routes/index')(passport);
 // var routes = require('./routes/index');
 // var users = require('./routes/users');
 
 var app = express();
+
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

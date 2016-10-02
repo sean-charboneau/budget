@@ -5,6 +5,7 @@ var jwt = require('jsonwebtoken');
 var moment = require('moment');
 
 var cashController = require('../lib/controllers/cash');
+var categoryController = require('../lib/controllers/categories');
 var userController = require('../lib/controllers/users');
 
 var authenticate = expressJwt({secret: config.get('apikey')});
@@ -56,10 +57,72 @@ module.exports = function(passport) {
 	router.get('/cashReserves', authenticate, function(req, res) {
 		cashController.getCashReserves(req.user.id, function(err, results) {
 			if(err) {
-				res.status(400).json({error: err});
+				return res.status(400).json({error: err});
 			}
-			res.status(200).json(results);
+			return res.status(200).json(results);
 		});
+	});
+
+	router.get('/categories', authenticate, function(req, res) {
+		categoryController.getCategoriesForUser(req.user.id, function(err, results) {
+			if(err) {
+				return res.status(400).json({error: err});
+			}
+			return res.status(200).json(results);
+		});
+	});
+
+	router.post('/transaction', authenticate, function(req, res) {
+		var amount = req.body.amount;
+		var categoryId = req.body.categoryId;
+		var country = req.body.country;
+		var currency = req.body.currency;
+		var date = req.body.date;
+		var description = req.body.description;
+		var endDate = req.body.endDate;
+		var type = req.body.type;
+
+		try {
+			date = moment(date).format('YYYY-MM-DD');
+		} catch(e) {
+			return res.status(400).json({error: 'Invalid date format'});
+		}
+		if(endDate) {
+			try {
+				endDate = moment(endDate).format('YYYY-MM-DD');
+			} catch(e) {
+				return res.status(400).json({error: 'Invalid date format'});
+			}
+		}
+		try {
+			amount = parseFloat(amount);
+		} catch(e) {
+			return res.status(400).json({error: 'Invalid amount format'});
+		}
+
+		if(!amount) {
+			return res.status(400).json({error: 'Amount is required'});
+		}
+		if(!type) {
+			return res.status(400).json({error: 'Type is required'});
+		}
+		if(!categoryId) {
+			return res.status(400).json({error: 'Category is required'});
+		}
+		if(!currency) {
+			return res.status(400).json({error: 'Currency is required'});
+		}
+		if(!date) {
+			return res.status(400).json({error: 'Date is required'});
+		}
+
+		cashController.recordTransaction(req.user.id, amount, categoryId, country, currency, date, description, endDate, type, function(err, results) {
+			if(err) {
+				return res.status(400).json({error: err});
+			}
+			return res.status(200).json({test: 'test'});
+		});
+
 	});
 
 	router.post('/withdrawal', authenticate, function(req, res) {
@@ -74,6 +137,18 @@ module.exports = function(passport) {
 			date = moment(date).format('YYYY-MM-DD');
 		} catch(e) {
 			return res.status(400).json({error: 'Invalid date format'});
+		}
+		try {
+			amount = parseFloat(amount);
+		} catch(e) {
+			return res.status(400).json({error: 'Invalid amount format'});
+		}
+		if(isFee) {
+			try {
+				feeAmount = parseFloat(feeAmount);
+			} catch(e) {
+				return res.status(400).json({error: 'Invalid fee amount format'});
+			}
 		}
 		if(!amount) {
 			return res.status(400).json({error: 'Amount is required'});
