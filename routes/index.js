@@ -129,8 +129,8 @@ module.exports = function(passport) {
 		var amount = req.body.amount;
 		var currency = req.body.currency;
 		var date = req.body.date;
-		var isEarnedCash = req.body.isEarnedCash;
-		var isFee = req.body.isFee;
+		var isEarnedCash = (req.body.isEarnedCash == 'true');
+		var isFee = (req.body.isFee == 'true');
 		var feeAmount = req.body.feeAmount;
 
 		try {
@@ -160,8 +160,7 @@ module.exports = function(passport) {
 			return res.status(400).json({error: 'Currency is required'});
 		}
 		
-
-		cashController.recordWithdrawal(req.user.id, amount, currency, date, isEarnedCash, isFee, feeAmount, function(err, results) {
+		cashController.recordWithdrawalAndCheckForNegatives(req.user.id, amount, currency, date, isEarnedCash, isFee, feeAmount, function(err, results) {
 			if(err) {
 				return res.status(400).json({error: err});
 			}
