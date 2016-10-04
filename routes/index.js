@@ -11,6 +11,10 @@ var userController = require('../lib/controllers/users');
 var authenticate = expressJwt({secret: config.get('apikey')});
 var router = express.Router();
 
+var defaultTransactionSort = { field: 'date', order: 'desc' };
+var defaultTransactionLimit = 10;
+var defaultTransactionFilters = [];
+
 var generateToken = function(req, res, next) {
 	req.token = jwt.sign({
 		id: req.user.id
@@ -72,6 +76,19 @@ module.exports = function(passport) {
 		});
 	});
 
+	router.get('/transaction', authenticate, function(req, res) {
+		var limit = req.body.limit || defaultTransactionLimit;
+		var sort = req.body.sort || defaultTransactionSort;
+		var filters = req.body.filters || defaultTransactionFilters;
+
+		cashController.getTransactions(req.user.id, limit, sort, filters, function(err, results) {
+			if(err) {
+				return res.status(400).json({error: err});
+			}
+			return res.status(200).json(results);
+		});
+	});
+
 	router.post('/transaction', authenticate, function(req, res) {
 		var amount = req.body.amount;
 		var categoryId = req.body.categoryId;
@@ -120,7 +137,12 @@ module.exports = function(passport) {
 			if(err) {
 				return res.status(400).json({error: err});
 			}
-			return res.status(200).json({test: 'test'});
+			cashController.getTransactions(req.user.id, defaultTransactionLimit, defaultTransactionSort, defaultTransactionFilters, function(err, results) {
+				if(err) {
+					return res.status(400).json({error: err});
+				}
+				return res.status(200).json(results);
+			});
 		});
 
 	});
