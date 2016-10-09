@@ -77,9 +77,9 @@ module.exports = function(passport) {
 	});
 
 	router.get('/transaction', authenticate, function(req, res) {
-		var limit = req.body.limit || defaultTransactionLimit;
-		var sort = req.body.sort || defaultTransactionSort;
-		var filters = req.body.filters || defaultTransactionFilters;
+		var limit = req.query.limit ? parseInt(req.query.limit) : defaultTransactionLimit;
+		var sort = req.query.sort || defaultTransactionSort;
+		var filters = req.query.filters || defaultTransactionFilters;
 
 		cashController.getTransactions(req.user.id, limit, sort, filters, function(err, results) {
 			if(err) {

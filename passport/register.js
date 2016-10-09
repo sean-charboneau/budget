@@ -1,6 +1,7 @@
 var bCrypt = require('bcrypt-nodejs');
 var LocalStrategy = require('passport-local').Strategy;
 
+var categoryController = require('../lib/controllers/categories');
 var userController = require('../lib/controllers/users');
 
 module.exports = function(passport) {
@@ -32,13 +33,20 @@ module.exports = function(passport) {
                         newUser.baseCurrency = req.param('baseCurrency');
 
                         // save the user
-                        userController.createUser(newUser, function(err) {
+                        userController.createUser(newUser, function(err, results) {
                             if (err) {
                                 console.log('Error creating user: ' + err);  
                                 return callback(null, false, {'message': err});
                             }
-                            console.log('User Registration succesful');    
-                            return callback(null, newUser);
+                            newUser.id = results.insertId;
+                            console.log('User Registration succesful');
+                            categoryController.setDefaultCategoriesForUser(newUser.id, function(err, results) {
+                                if(err) {
+                                    console.log('Error setting default categories: ' + err);
+                                    return callback(err, newUser);
+                                }
+                                return callback(null, newUser);
+                            });
                         });
                     }
                 });
