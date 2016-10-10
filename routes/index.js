@@ -79,12 +79,18 @@ module.exports = function(passport) {
 	router.get('/transaction', authenticate, function(req, res) {
 		var limit = req.query.limit ? parseInt(req.query.limit) : defaultTransactionLimit;
 		var page = req.query.page ? parseInt(req.query.page) : 1;
-		var sort = req.query.sort || defaultTransactionSort;
-		var filters = req.query.filters || defaultTransactionFilters;
-		try {
-			filters = JSON.parse(filters);
-		} catch(e) {
-			filters = [];
+		var sort = defaultTransactionSort;
+		var filters = defaultTransactionFilters;
+
+		if(req.query.sort) {
+			try {
+				sort = JSON.parse(decodeURIComponent(req.query.sort));
+			} catch(e) {}
+		}
+		if(req.query.filters) {
+			try {
+				filters = JSON.parse(decodeURIComponent(req.query.filters));
+			} catch(e) {}
 		}
 
 		cashController.getTransactions(req.user.id, limit, page, sort, filters, function(err, results) {
@@ -143,7 +149,7 @@ module.exports = function(passport) {
 			if(err) {
 				return res.status(400).json({error: err});
 			}
-			cashController.getTransactions(req.user.id, defaultTransactionLimit, defaultTransactionSort, defaultTransactionFilters, function(err, results) {
+			cashController.getTransactions(req.user.id, defaultTransactionLimit, 1, defaultTransactionSort, defaultTransactionFilters, function(err, results) {
 				if(err) {
 					return res.status(400).json({error: err});
 				}
