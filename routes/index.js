@@ -78,10 +78,16 @@ module.exports = function(passport) {
 
 	router.get('/transaction', authenticate, function(req, res) {
 		var limit = req.query.limit ? parseInt(req.query.limit) : defaultTransactionLimit;
+		var page = req.query.page ? parseInt(req.query.page) : 1;
 		var sort = req.query.sort || defaultTransactionSort;
 		var filters = req.query.filters || defaultTransactionFilters;
+		try {
+			filters = JSON.parse(filters);
+		} catch(e) {
+			filters = [];
+		}
 
-		cashController.getTransactions(req.user.id, limit, sort, filters, function(err, results) {
+		cashController.getTransactions(req.user.id, limit, page, sort, filters, function(err, results) {
 			if(err) {
 				return res.status(400).json({error: err});
 			}
@@ -144,7 +150,20 @@ module.exports = function(passport) {
 				return res.status(200).json(results);
 			});
 		});
+	});
 
+	router.get('/withdrawal', authenticate, function(req, res) {
+		var limit = req.query.limit ? parseInt(req.query.limit) : defaultTransactionLimit;
+		var page = req.query.page ? parseInt(req.query.page) : 1;
+		var sort = req.query.sort || defaultTransactionSort;
+		var filters = req.query.filters || defaultTransactionFilters;
+
+		cashController.getWithdrawals(req.user.id, limit, page, sort, filters, function(err, results) {
+			if(err) {
+				return res.status(400).json({error: err});
+			}
+			return res.status(200).json(results);
+		});
 	});
 
 	router.post('/withdrawal', authenticate, function(req, res) {
