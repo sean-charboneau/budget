@@ -8,6 +8,7 @@ exports.up = function (db, callback) {
                 '(' +
                 '   id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, ' +
                 '   user_id INT NOT NULL, ' +
+                '   trip_name VARCHAR(255), ' +
                 '   start_date DATE NOT NULL, ' +
                 '   days INT UNSIGNED, ' +
                 '   budget INT UNSIGNED, ' +
@@ -38,5 +39,5 @@ exports.up = function (db, callback) {
 };
 
 exports.down = function (db, callback) {
-    db.runSql("DROP TABLE IF EXISTS trip, segment;", callback);
+    db.runSql("DROP TABLE IF EXISTS segment, trip;", callback);
 };

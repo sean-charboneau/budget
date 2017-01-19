@@ -6,6 +6,7 @@ var moment = require('moment');
 
 var cashController = require('../lib/controllers/cash');
 var categoryController = require('../lib/controllers/categories');
+var tripController = require('../lib/controllers/trips');
 var userController = require('../lib/controllers/users');
 
 var authenticate = expressJwt({secret: config.get('apikey')});
@@ -76,8 +77,8 @@ module.exports = function(passport) {
 		});
 	});
 
-	router.get('/budgetOverview', authenticate, function(req, res) {
-		cashController.getBudgetOverview(req.user.id, function(err, results) {
+	router.get('/tripOverview', authenticate, function(req, res) {
+		tripController.getTripOverview(req.user.id, function(err, results) {
 			if(err) {
 				return res.status(400).json({error: err});
 			}
