@@ -12,7 +12,6 @@ exports.up = function (db, callback) {
                 '   start_date DATE NOT NULL, ' +
                 '   days INT UNSIGNED, ' +
                 '   budget INT UNSIGNED, ' +
-                '   has_segments TINYINT(1), ' +
                 '   is_active TINYINT(1), ' +
                 '   created_at TIMESTAMP DEFAULT "0000-00-00 00:00:00", ' +
                 '   updated_at TIMESTAMP DEFAULT now() ON UPDATE now(), ' +
