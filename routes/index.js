@@ -55,6 +55,7 @@ module.exports = function(passport) {
             if(err) {
                 return res.status(400).json({error: err});
             }
+			delete user.password_hash;
 		    res.status(200).json(user);
         });
 	});
