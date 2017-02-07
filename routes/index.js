@@ -112,6 +112,38 @@ module.exports = function(passport) {
 		});
 	});
 
+	router.post('/trip', authenticate, function(req, res) {
+		var currency = req.body.currency;
+		var name = req.body.name;
+		var startDate = req.body.startDate;
+		var segments = req.body.segments;
+		var oneOffExpenses = req.body.oneOffExpenses;
+		
+		try {
+			startDate = moment(startDate).format('YYYY-MM-DD');
+		} catch(e) {
+			return res.status(400).json({error: 'Invalid date format'});
+		}
+		try {
+			segments = JSON.parse(segments);
+		} catch(e) {
+			return res.status(400).json({error: 'Invalid JSON - segments'});
+		}
+		try {
+			oneOffExpenses = JSON.parse(oneOffExpenses);
+		} catch(e) {
+			return res.status(400).json({error: 'Invalid JSON - oneOffExpenses'});
+		}
+
+		tripController.saveTrip(req.user.id, name, startDate, segments, oneOffExpenses, currency, function(err, results) {
+			if(err) {
+				console.log(err);
+				return res.status(400).json({error: err});
+			}
+			return res.status(200).json(results);
+		});
+	});
+
 	router.post('/transaction', authenticate, function(req, res) {
 		var amount = req.body.amount;
 		var categoryId = req.body.categoryId;
