@@ -187,11 +187,12 @@ module.exports = function(passport) {
 		if(!date) {
 			return res.status(400).json({error: 'Date is required'});
 		}
-
+		console.log('recording');
 		cashController.recordTransaction(req.user.id, amount, categoryId, country, currency, date, description, endDate, type, function(err, results) {
 			if(err) {
 				return res.status(400).json({error: err});
 			}
+			console.log('recorded');
 			cashController.getTransactions(req.user.id, defaultTransactionLimit, 1, defaultTransactionSort, defaultTransactionFilters, function(err, results) {
 				if(err) {
 					return res.status(400).json({error: err});
