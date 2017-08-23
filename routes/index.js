@@ -112,6 +112,44 @@ module.exports = function(passport) {
 		});
 	});
 
+	router.get('/spendingData', authenticate, function(req, res) {
+		var range = req.query.range;
+		var tripId = req.query.tripId;
+		var categories = req.query.categories;
+
+		try {
+			categories = JSON.parse(categories);
+		} catch(e) {
+			return res.status(400).json({error: 'Invalid JSON - categories'});
+		}
+
+		cashController.getSpendingForGraph(req.user.id, tripId, range, categories, function(err, results) {
+			if(err) {
+				return res.status(400).json({error: err});
+			}
+			return res.status(200).json(results);
+		});
+	});
+
+	router.get('/trips', authenticate, function(req, res) {
+		tripController.getAllTripsForUser(req.user.id, function(err, results) {
+			if(err) {
+				return res.status(400).json({error: err});
+			}
+			return res.status(200).json(results);
+		});
+	});
+
+	router.get('/categoriesForTrip', authenticate, function(req, res) {
+		var tripId = req.query.tripId;
+		categoryController.getAllCategoriesForTrip(req.user.id, tripId, function(err, results) {
+			if(err) {
+				return res.status(400).json({error: err});
+			}
+			return res.status(200).json(results);
+		});
+	});
+
 	router.post('/trip', authenticate, function(req, res) {
 		var currency = req.body.currency;
 		var name = req.body.name;
