@@ -70,7 +70,7 @@ module.exports = function(passport) {
 	});
 
 	router.get('/categories', authenticate, function(req, res) {
-		categoryController.getCategoriesForUser(req.user.id, function(err, results) {
+		categoryController.getCategoriesForUser(req.user.id, false, function(err, results) {
 			if(err) {
 				return res.status(400).json({error: err});
 			}
@@ -115,7 +115,8 @@ module.exports = function(passport) {
 	router.get('/spendingData', authenticate, function(req, res) {
 		var range = req.query.range;
 		var tripId = req.query.tripId;
-		var categories = req.query.categories;
+		var categories = req.query.categories || '[]';
+		var graphType = req.query.graphType;
 
 		try {
 			categories = JSON.parse(categories);
@@ -123,7 +124,7 @@ module.exports = function(passport) {
 			return res.status(400).json({error: 'Invalid JSON - categories'});
 		}
 
-		cashController.getSpendingForGraph(req.user.id, tripId, range, categories, function(err, results) {
+		cashController.getSpendingForGraph(req.user.id, tripId, graphType, range, categories, function(err, results) {
 			if(err) {
 				return res.status(400).json({error: err});
 			}
