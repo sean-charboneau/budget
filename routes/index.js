@@ -36,6 +36,36 @@ var respond = function(req, res) {
 	});
 };
 
+var scrubFilters = function(filters) {
+	if(!filters) {
+		return {};
+	}
+
+	var cleanFilters = {};
+	if(filters.tripId) {
+		try {
+			cleanFilters.tripId = parseInt(filters.tripId);
+		} catch(e) {}
+	}
+	if(filters.withdrawalId) {
+		try {
+			cleanFilters.withdrawalId = parseInt(filters.withdrawalId);
+		} catch(e) {}
+	}
+	if(filters.dateStart) {
+		try {
+			cleanFilters.dateStart = moment(filters.dateStart).format('YYYY-MM-DD');
+		} catch(e) {}
+	}
+	if(filters.dateEnd) {
+		try {
+			cleanFilters.dateEnd = moment(filters.dateEnd).format('YYYY-MM-DD');
+		} catch(e) {}
+	}
+
+	return cleanFilters;
+};
+
 module.exports = function(passport) {
 
 	/* Handle Login POST */
@@ -100,7 +130,7 @@ module.exports = function(passport) {
 		}
 		if(req.query.filters) {
 			try {
-				filters = JSON.parse(decodeURIComponent(req.query.filters));
+				filters = scrubFilters(JSON.parse(decodeURIComponent(req.query.filters)));
 			} catch(e) {}
 		}
 
@@ -226,12 +256,10 @@ module.exports = function(passport) {
 		if(!date) {
 			return res.status(400).json({error: 'Date is required'});
 		}
-		console.log('recording');
 		cashController.recordTransaction(req.user.id, amount, categoryId, country, currency, date, description, endDate, type, function(err, results) {
 			if(err) {
 				return res.status(400).json({error: err});
 			}
-			console.log('recorded');
 			cashController.getTransactions(req.user.id, defaultTransactionLimit, 1, defaultTransactionSort, defaultTransactionFilters, function(err, results) {
 				if(err) {
 					return res.status(400).json({error: err});
@@ -254,11 +282,11 @@ module.exports = function(passport) {
 		}
 		if(req.query.filters) {
 			try {
-				filters = JSON.parse(decodeURIComponent(req.query.filters));
+				filters = scrubFilters(JSON.parse(decodeURIComponent(req.query.filters)));
 			} catch(e) {}
 		}
 
-		cashController.getWithdrawals(req.user.id, limit, page, sort, filters, function(err, results) {
+		cashController.getWithdrawals(req.user.id, limit, page, sort, cleanFilters, function(err, results) {
 			if(err) {
 				return res.status(400).json({error: err});
 			}

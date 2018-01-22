@@ -10,14 +10,14 @@ var tripId = 1;
 var userId = 1;
 var setup = [
     {
-        country: 'PL',
-        currency: 'PLN',
-        startDate: '2018-01-10',
-        endDate: '2018-01-15',
+        country: 'HU',
+        currency: 'HUF',
+        startDate: '2018-03-01',
+        endDate: '2018-03-30',
         perDay: 6,
         plusMinusPerDay: 2,
-        minAmount: 5,
-        maxAmount: 150
+        minAmount: 500,
+        maxAmount: 5000
     // },
     // {
     //     country: 'TH',
