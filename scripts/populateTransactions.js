@@ -10,10 +10,10 @@ var tripId = 1;
 var userId = 1;
 var setup = [
     {
-        country: 'MY',
-        currency: 'MYR',
-        startDate: '2017-07-15',
-        endDate: '2017-07-20',
+        country: 'PL',
+        currency: 'PLN',
+        startDate: '2018-01-10',
+        endDate: '2018-01-15',
         perDay: 6,
         plusMinusPerDay: 2,
         minAmount: 5,
