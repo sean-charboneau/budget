@@ -24,12 +24,10 @@ var generateToken = function(req, res, next) {
 	});
     res.token = req.token;
     res.cookie(config.get('tokenCookie'), req.token, { path: '/', maxAge: 900000, httpOnly: false });
-    console.log('Token: ' + req.token);
 	next();
 };
 
 var respond = function(req, res) {
-    console.log('Token2: ' + req.token);
 	res.status(200).json({
 		user: req.user,
 		token: req.token
@@ -61,6 +59,9 @@ var scrubFilters = function(filters) {
 		try {
 			cleanFilters.dateEnd = moment(filters.dateEnd).format('YYYY-MM-DD');
 		} catch(e) {}
+	}
+	if(filters.country) {
+		cleanFilters.country = filters.country;
 	}
 
 	return cleanFilters;
@@ -284,6 +285,9 @@ module.exports = function(passport) {
 			try {
 				filters = scrubFilters(JSON.parse(decodeURIComponent(req.query.filters)));
 			} catch(e) {}
+		}
+		if(filters.country.length !== 2) {
+			return res.status(400).json({error: 'Invalid country code'});
 		}
 
 		cashController.getWithdrawals(req.user.id, limit, page, sort, cleanFilters, function(err, results) {
