@@ -63,6 +63,9 @@ var scrubFilters = function(filters) {
 	if(filters.country) {
 		cleanFilters.country = filters.country;
 	}
+	if(filters.categoryName) {
+		cleanFilters.categoryName = filters.categoryName;
+	}
 
 	return cleanFilters;
 };
