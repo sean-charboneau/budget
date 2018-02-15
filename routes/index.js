@@ -289,11 +289,11 @@ module.exports = function(passport) {
 				filters = scrubFilters(JSON.parse(decodeURIComponent(req.query.filters)));
 			} catch(e) {}
 		}
-		if(filters.country.length !== 2) {
+		if(filters.country && filters.country.length !== 2) {
 			return res.status(400).json({error: 'Invalid country code'});
 		}
 
-		cashController.getWithdrawals(req.user.id, limit, page, sort, cleanFilters, function(err, results) {
+		cashController.getWithdrawals(req.user.id, limit, page, sort, filters, function(err, results) {
 			if(err) {
 				return res.status(400).json({error: err});
 			}
