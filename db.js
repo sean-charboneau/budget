@@ -1,6 +1,6 @@
 var mysql = require('mysql');
 
-var dbConfig = require('./database.json');
+var dbConfig = require('./database.json').dev;
 
 dbConfig.user = process.env.CLEARDB_DATABASE_USER || dbConfig.user;
 dbConfig.password = process.env.CLEARDB_DATABASE_PASSWORD || dbConfig.password;
