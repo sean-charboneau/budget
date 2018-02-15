@@ -39,7 +39,7 @@ module.exports = function(passport) {
                                 return callback(null, false, {'message': err});
                             }
                             newUser.id = results.insertId;
-                            console.log('User Registration succesful');
+                            console.log('User Registration successful');
                             categoryController.setDefaultCategoriesForUser(newUser.id, function(err, results) {
                                 if(err) {
                                     console.log('Error setting default categories: ' + err);
