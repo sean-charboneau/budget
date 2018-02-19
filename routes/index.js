@@ -185,6 +185,19 @@ module.exports = function(passport) {
 		});
 	});
 
+	router.post('/profile', authenticate, function(req, res) {
+		var firstName = req.body.firstName;
+		var lastName = req.body.lastName;
+		var email = req.body.email;
+
+		userController.updateUser(req.user.id, firstName, lastName, email, function(err, results) {
+			if(err) {
+				return res.status(400).json({error: err});
+			}
+			return res.status(200).json(results);
+		});
+	});
+
 	router.post('/trip', authenticate, function(req, res) {
 		var currency = req.body.currency;
 		var name = req.body.name;

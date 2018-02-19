@@ -6,18 +6,18 @@ var request = require('request');
 var db = require('../db.js');
 var cashController = require('../lib/controllers/cash');
 
-var tripId = 1;
-var userId = 21;
+var tripId = 3;
+var userId = 3;
 var setup = [
     {
-        country: 'XK',
-        currency: 'EUR',
-        startDate: '2018-02-16',
+        country: 'MK',
+        currency: 'MKD',
+        startDate: '2018-02-10',
         endDate: '2018-02-18',
         perDay: 6,
         plusMinusPerDay: 2,
-        minAmount: 0.5,
-        maxAmount: 20
+        minAmount: 30,
+        maxAmount: 500
     // },
     // {
     //     country: 'TH',
@@ -43,8 +43,8 @@ async.eachSeries(setup, function(options, callback) {
 
         async.timesSeries(numTransactions, function(n, innerCb) {
             var amount = Math.floor(Math.random() * (options.maxAmount - options.minAmount + 1) + options.minAmount);
-            // var categoryId = Math.floor(Math.random() * 6) + 1; //Local
-            var categoryId = (Math.floor(Math.random() * 6) * 10) + 1; //ClearDB
+            var categoryId = Math.floor(Math.random() * 6) + 1; //Local
+            // var categoryId = (Math.floor(Math.random() * 6) * 10) + 1; //ClearDB
             var type = (Math.random() < 0.9 ? 'cash' : 'credit');
 
             cashController.getCashReservesForCurrency(userId, options.currency, function(err, remaining) {
